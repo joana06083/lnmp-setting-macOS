@@ -1,0 +1,51 @@
+services:
+  # php-fpm 8.1
+  php:
+    build:
+      context: .
+      dockerfile: ./php/Dockerfile
+    container_name: php
+    restart: unless-stopped
+    volumes:
+      - ./projects:/my_projects
+    depends_on:
+      - mysql
+
+  # nginx
+  nginx:
+    image: nginx:latest
+    container_name: nginx
+    restart: unless-stopped
+    ports:
+      - 80:80
+    volumes:
+      - ./nginx/conf.d:/etc/nginx/conf.d
+      - ./projects:/my_projects
+    environment:
+      - TZ=Asia/Taipei
+
+  # mysql
+  mysql:
+    image: "mysql"
+    container_name: mysql
+    restart: unless-stopped
+    ports:
+      - 3306:3306
+    environment:
+      MYSQL_DATABASE: "${DB_DATABASE}"
+      MYSQL_PASSWORD: "${DB_PASSWORD}"
+      MYSQL_ROOT_PASSWORD: "${DB_PASSWORD}"
+      MYSQL_ALLOW_EMPTY_PASSWORD: 1 #預設密碼為空
+    volumes:
+      - ./mysql:/var/lib/mysql
+
+  # phpmyadmin
+  phpmyadmin:
+    image: "phpmyadmin"
+    links:
+      - mysql:mysql
+    ports:
+      - 8080:80
+    environment:
+      MYSQL_ROOT_PASSWORD: "${DB_PASSWORD}"
+      PMA_HOST: mysql
