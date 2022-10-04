@@ -15,4 +15,4 @@ docker exec -it php php /my_projects/test/artisan queue:work database --queue In
 切換不同專案時需要改nginx/cong.d/laravel.conf
 root /my_projects/專案名稱/public
 
-#mysql資料夾會存放 
+#mysql資料夾會存放 database data
